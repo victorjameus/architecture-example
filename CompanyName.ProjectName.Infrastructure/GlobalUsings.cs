@@ -8,5 +8,8 @@ global using Microsoft.Data.SqlClient;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Diagnostics.HealthChecks;
+global using Polly;
+global using Polly.CircuitBreaker;
+global using Polly.Retry;
 global using System.Data;
 global using System.Text.Json.Serialization;
