@@ -37,6 +37,7 @@ public interface IBlobStorageService
     /// <param name="fileName">
     /// Nombre del archivo en el contenedor, incluyendo extensión (ej: <c>export_20260529_120000.csv</c>).
     /// Se recomienda incluir un timestamp para garantizar unicidad.
+    /// Los archivos CSV de exportación incluyen los códigos ISO 4217 de las monedas en vez de sus identificadores.
     /// </param>
     /// <param name="contentType">
     /// Tipo MIME del archivo (ej: <c>text/csv</c>, <c>application/pdf</c>).

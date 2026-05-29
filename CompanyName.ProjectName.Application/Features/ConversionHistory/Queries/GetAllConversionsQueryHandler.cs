@@ -6,16 +6,20 @@ namespace CompanyName.ProjectName.Application.Features.ConversionHistory.Queries
 
 public record GetAllConversionsQuery(int Page, int PageSize) : IRequest<ApiResponse<PagedResponse<ConversionHistoryDto>>>;
 
-public sealed class GetAllConversionsQueryHandler(IUnitOfWork uow) : IRequestHandler<GetAllConversionsQuery, ApiResponse<PagedResponse<ConversionHistoryDto>>>
+public sealed class GetAllConversionsQueryHandler(IUnitOfWork uow)
+    : IRequestHandler<GetAllConversionsQuery, ApiResponse<PagedResponse<ConversionHistoryDto>>>
 {
     public async Task<ApiResponse<PagedResponse<ConversionHistoryDto>>> Handle(GetAllConversionsQuery request, CancellationToken ct)
     {
         var conversions = await uow.Repository<Domain.Entities.ConversionHistory>().GetAllAsync();
+        var currencies = await uow.Repository<Domain.Entities.Currency>().GetAllAsync();
+        var currencyMap = currencies.ToDictionary(c => c.Id, c => c.Code);
 
-        var dtos = conversions.Select(c => new ConversionHistoryDto(
+        var dtos = conversions.Select(c => new ConversionHistoryDto
+        (
             c.Id,
-            c.FromCurrency?.Code ?? string.Empty,
-            c.ToCurrency?.Code ?? string.Empty,
+            currencyMap.GetValueOrDefault(c.FromCurrencyId, string.Empty),
+            currencyMap.GetValueOrDefault(c.ToCurrencyId, string.Empty),
             c.Amount,
             c.ConvertedAmount,
             c.ExchangeRate,
