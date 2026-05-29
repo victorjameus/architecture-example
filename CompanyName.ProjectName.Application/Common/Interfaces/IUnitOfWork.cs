@@ -1,4 +1,6 @@
-﻿namespace CompanyName.ProjectName.Application.Common.Interfaces;
+﻿using CompanyName.ProjectName.Domain.Exceptions;
+
+namespace CompanyName.ProjectName.Application.Common.Interfaces;
 
 /// <summary>
 /// Define el contrato para la gestión de transacciones y acceso a repositorios.
@@ -48,7 +50,7 @@ public interface IUnitOfWork : IDisposable
     /// <returns>
     /// Número de registros afectados por las operaciones confirmadas.
     /// </returns>
-    /// <exception cref="Domain.Exceptions.DomainException">
+    /// <exception cref="DomainException">
     /// Se lanza cuando ocurre un error durante el commit. El rollback se ejecuta automáticamente.
     /// </exception>
     Task<int> SaveChangesAsync();

@@ -1,7 +1,7 @@
 ﻿using CompanyName.ProjectName.Application.Common.Models;
-using CompanyName.ProjectName.Application.Features.ConversionHistory.Commands;
-using CompanyName.ProjectName.Application.Features.ConversionHistory.DTOs;
-using CompanyName.ProjectName.Application.Features.ConversionHistory.Queries;
+using CompanyName.ProjectName.Application.Features.Conversion.Commands;
+using CompanyName.ProjectName.Application.Features.Conversion.DTOs;
+using CompanyName.ProjectName.Application.Features.Conversion.Queries;
 
 namespace CompanyName.ProjectName.Api.Controllers;
 

@@ -1,4 +1,6 @@
-﻿namespace CompanyName.ProjectName.Application.Common.Interfaces;
+﻿using CompanyName.ProjectName.Domain.Exceptions;
+
+namespace CompanyName.ProjectName.Application.Common.Interfaces;
 
 /// <summary>
 /// Define el contrato para la consulta de tasas de cambio desde un servicio externo.
@@ -46,7 +48,7 @@ public interface IExchangeRateService
     /// <returns>
     /// Tasa de cambio vigente entre las monedas especificadas expresada como valor <c>decimal</c>.
     /// </returns>
-    /// <exception cref="Domain.Exceptions.ExternalServiceException">
+    /// <exception cref="ExternalServiceException">
     /// Se lanza cuando ExchangeRate-API no está disponible tras agotar los reintentos configurados,
     /// o cuando el circuit breaker se encuentra en estado abierto.
     /// </exception>
@@ -75,7 +77,7 @@ public interface IExchangeRateService
     /// Diccionario donde la clave es el código ISO 4217 de la moneda destino
     /// y el valor es la tasa de cambio expresada como <c>decimal</c>.
     /// </returns>
-    /// <exception cref="Domain.Exceptions.ExternalServiceException">
+    /// <exception cref="ExternalServiceException">
     /// Se lanza cuando ExchangeRate-API no está disponible tras agotar los reintentos configurados,
     /// o cuando el circuit breaker se encuentra en estado abierto.
     /// </exception>

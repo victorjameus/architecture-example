@@ -1,4 +1,6 @@
-﻿namespace CompanyName.ProjectName.Application.Common.Interfaces;
+﻿using CompanyName.ProjectName.Domain.Exceptions;
+
+namespace CompanyName.ProjectName.Application.Common.Interfaces;
 
 /// <summary>
 /// Define el contrato para las operaciones de almacenamiento en Azure Blob Storage.
@@ -45,7 +47,7 @@ public interface IBlobStorageService
     /// <returns>
     /// URL pública del archivo subido en Azure Blob Storage.
     /// </returns>
-    /// <exception cref="Domain.Exceptions.ExternalServiceException">
+    /// <exception cref="ExternalServiceException">
     /// Se lanza cuando Azure Blob Storage no está disponible tras agotar los reintentos configurados,
     /// o cuando el circuit breaker se encuentra en estado abierto.
     /// </exception>
@@ -70,7 +72,7 @@ public interface IBlobStorageService
     ///   <item><description><c>false</c> — el archivo no existe en el contenedor.</description></item>
     /// </list>
     /// </returns>
-    /// <exception cref="Domain.Exceptions.ExternalServiceException">
+    /// <exception cref="ExternalServiceException">
     /// Se lanza cuando Azure Blob Storage no está disponible tras agotar los reintentos configurados,
     /// o cuando el circuit breaker se encuentra en estado abierto.
     /// </exception>

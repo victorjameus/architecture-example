@@ -41,7 +41,7 @@
              <param name="page">Número de página a recuperar. Debe ser mayor a 0. Valor por defecto: 1.</param>
              <param name="pageSize">Cantidad de registros por página. Debe ser mayor a 0 y no superar 100. Valor por defecto: 10.</param>
              <returns>
-             Un <see cref="T:CompanyName.ProjectName.Application.Common.Models.PagedResponse`1"/> de <see cref="T:CompanyName.ProjectName.Application.Features.ConversionHistory.DTOs.ConversionHistoryDto"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
+             Un <see cref="T:CompanyName.ProjectName.Application.Common.Models.PagedResponse`1"/> de <see cref="T:CompanyName.ProjectName.Application.Features.Conversion.DTOs.ConversionHistoryDto"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
              incluyendo metadatos de paginación como total de registros, páginas y navegación.
              </returns>
              <response code="200">Retorna el historial paginado de conversiones.</response>
@@ -59,12 +59,12 @@
              </remarks>
              <param name="id">Identificador único de la conversión.</param>
              <returns>
-             Un <see cref="T:CompanyName.ProjectName.Application.Features.ConversionHistory.DTOs.ConversionHistoryDto"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/> si existe.
+             Un <see cref="T:CompanyName.ProjectName.Application.Features.Conversion.DTOs.ConversionHistoryDto"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/> si existe.
              </returns>
              <response code="200">Retorna la conversión solicitada.</response>
              <response code="404">No se encontró una conversión con el id especificado.</response>
         </member>
-        <member name="M:CompanyName.ProjectName.Api.Controllers.ConversionController.Create(CompanyName.ProjectName.Application.Features.ConversionHistory.Commands.CreateConversionCommand)">
+        <member name="M:CompanyName.ProjectName.Api.Controllers.ConversionController.Create(CompanyName.ProjectName.Application.Features.Conversion.Commands.CreateConversionCommand)">
              <summary>
              POST /api/conversion
              </summary>
@@ -89,7 +89,7 @@
              </remarks>
              <param name="command">Comando con los identificadores de moneda origen, destino y el monto a convertir.</param>
              <returns>
-             El <see cref="T:CompanyName.ProjectName.Application.Features.ConversionHistory.DTOs.ConversionHistoryDto"/> recién creado envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
+             El <see cref="T:CompanyName.ProjectName.Application.Features.Conversion.DTOs.ConversionHistoryDto"/> recién creado envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
              incluyendo el monto convertido, la tasa de cambio utilizada y la fecha de conversión.
              </returns>
              <response code="201">Conversión realizada y registrada exitosamente.</response>
@@ -118,7 +118,7 @@
              <response code="200">Conversión eliminada exitosamente.</response>
              <response code="404">No se encontró una conversión con el id especificado.</response>
         </member>
-        <member name="T:CompanyName.ProjectName.Api.Controllers.CurrencyController">
+        <member name="T:CompanyName.ProjectName.Api.Controllers.CurrenciesController">
             <summary>
             Gestión del catálogo de monedas
             </summary>
@@ -127,7 +127,7 @@
             Las eliminaciones son lógicas para preservar la integridad referencial con el historial de conversiones.
             </remarks>
         </member>
-        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrencyController.#ctor(MediatR.IMediator)">
+        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrenciesController.#ctor(MediatR.IMediator)">
             <summary>
             Gestión del catálogo de monedas
             </summary>
@@ -136,7 +136,7 @@
             Las eliminaciones son lógicas para preservar la integridad referencial con el historial de conversiones.
             </remarks>
         </member>
-        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrencyController.GetAll">
+        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrenciesController.GetAll">
              <summary>
              GET /api/currency
              </summary>
@@ -148,12 +148,12 @@
              - El caché se invalida automáticamente al crear, actualizar o desactivar una moneda.
              </remarks>
              <returns>
-             Lista de <see cref="T:CompanyName.ProjectName.Application.Features.Currency.DTOs.CurrencyDto"/> envuelta en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>.
+             Lista de <see cref="T:CompanyName.ProjectName.Application.Features.Currencies.DTOs.CurrencyDto"/> envuelta en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>.
              Retorna una lista vacía si no existen monedas activas.
              </returns>
              <response code="200">Retorna la lista de monedas activas.</response>
         </member>
-        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrencyController.GetById(System.Int32)">
+        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrenciesController.GetById(System.Int32)">
              <summary>
              GET /api/currency/{id}
              </summary>
@@ -165,12 +165,12 @@
              </remarks>
              <param name="id">Identificador único de la moneda.</param>
              <returns>
-             Un <see cref="T:CompanyName.ProjectName.Application.Features.Currency.DTOs.CurrencyDto"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/> si existe.
+             Un <see cref="T:CompanyName.ProjectName.Application.Features.Currencies.DTOs.CurrencyDto"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/> si existe.
              </returns>
              <response code="200">Retorna la moneda solicitada.</response>
              <response code="404">No se encontró una moneda con el id especificado.</response>
         </member>
-        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrencyController.Create(CompanyName.ProjectName.Application.Features.Currency.Commands.CreateCurrencyCommand)">
+        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrenciesController.Create(CompanyName.ProjectName.Application.Features.Currencies.Commands.CreateCurrencyCommand)">
              <summary>
              POST /api/currency
              </summary>
@@ -192,14 +192,14 @@
              </remarks>
              <param name="command">Comando con los datos de la moneda a crear.</param>
              <returns>
-             El <see cref="T:CompanyName.ProjectName.Application.Features.Currency.DTOs.CurrencyDto"/> recién creado envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
+             El <see cref="T:CompanyName.ProjectName.Application.Features.Currencies.DTOs.CurrencyDto"/> recién creado envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
              incluyendo el identificador generado y la fecha de creación.
              </returns>
              <response code="201">Moneda creada exitosamente.</response>
              <response code="400">Error de validación en el cuerpo de la solicitud.</response>
              <response code="409">Ya existe una moneda con el mismo código.</response>
         </member>
-        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrencyController.Update(System.Int32,CompanyName.ProjectName.Application.Features.Currency.Commands.UpdateCurrencyCommand)">
+        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrenciesController.Update(System.Int32,CompanyName.ProjectName.Application.Features.Currencies.Commands.UpdateCurrencyCommand)">
              <summary>
              PUT /api/currency/{id}
              </summary>
@@ -223,14 +223,14 @@
              <param name="id">Identificador único de la moneda a actualizar.</param>
              <param name="command">Comando con los datos actualizados de la moneda.</param>
              <returns>
-             El <see cref="T:CompanyName.ProjectName.Application.Features.Currency.DTOs.CurrencyDto"/> actualizado envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>.
+             El <see cref="T:CompanyName.ProjectName.Application.Features.Currencies.DTOs.CurrencyDto"/> actualizado envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>.
              </returns>
              <response code="200">Moneda actualizada exitosamente.</response>
              <response code="400">Error de validación en el cuerpo de la solicitud.</response>
              <response code="404">No se encontró una moneda con el id especificado.</response>
              <response code="409">Otra moneda ya tiene el mismo código.</response>
         </member>
-        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrencyController.Delete(System.Int32)">
+        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrenciesController.Delete(System.Int32)">
              <summary>
              DELETE /api/currency/{id}
              </summary>
@@ -283,12 +283,12 @@
              - Retorna una lista vacía si no se han generado exportaciones.
              </remarks>
              <returns>
-             Lista de <see cref="T:CompanyName.ProjectName.Application.Features.ConversionExport.DTOs.ConversionExportDto"/> envuelta en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
+             Lista de <see cref="T:CompanyName.ProjectName.Application.Features.Export.DTOs.ConversionExportDto"/> envuelta en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
              conteniendo la URL de descarga, fechas de filtro aplicadas y cantidad de registros de cada exportación.
              </returns>
              <response code="200">Retorna el listado de exportaciones generadas.</response>
         </member>
-        <member name="M:CompanyName.ProjectName.Api.Controllers.ExportController.Create(CompanyName.ProjectName.Application.Features.ConversionExport.Commands.CreateConversionExportCommand)">
+        <member name="M:CompanyName.ProjectName.Api.Controllers.ExportController.Create(CompanyName.ProjectName.Application.Features.Export.Commands.CreateConversionExportCommand)">
              <summary>
              POST /api/conversions/export
              </summary>
@@ -318,7 +318,7 @@
              </remarks>
              <param name="command">Comando con los filtros opcionales `DateFrom` y `DateTo` para el rango de exportación.</param>
              <returns>
-             El <see cref="T:CompanyName.ProjectName.Application.Features.ConversionExport.DTOs.ConversionExportDto"/> recién creado envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
+             El <see cref="T:CompanyName.ProjectName.Application.Features.Export.DTOs.ConversionExportDto"/> recién creado envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
              conteniendo el nombre del archivo, la URL pública de descarga y la cantidad de registros exportados.
              </returns>
              <response code="201">Exportación generada y subida a Blob Storage exitosamente.</response>

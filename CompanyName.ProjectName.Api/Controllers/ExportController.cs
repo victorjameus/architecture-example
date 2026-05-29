@@ -1,7 +1,7 @@
 ﻿using CompanyName.ProjectName.Application.Common.Models;
-using CompanyName.ProjectName.Application.Features.ConversionExport.Commands;
-using CompanyName.ProjectName.Application.Features.ConversionExport.DTOs;
-using CompanyName.ProjectName.Application.Features.ConversionExport.Queries;
+using CompanyName.ProjectName.Application.Features.Export.Commands;
+using CompanyName.ProjectName.Application.Features.Export.DTOs;
+using CompanyName.ProjectName.Application.Features.Export.Queries;
 
 namespace CompanyName.ProjectName.Api.Controllers;
 
