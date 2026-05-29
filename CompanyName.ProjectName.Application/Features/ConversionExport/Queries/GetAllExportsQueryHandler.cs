@@ -11,7 +11,20 @@ public sealed class GetAllExportsQueryHandler(IUnitOfWork uow) : IRequestHandler
     public async Task<ApiResponse<IEnumerable<ConversionExportDto>>> Handle(GetAllExportsQuery request, CancellationToken ct)
     {
         var exports = await uow.Repository<Domain.Entities.ConversionExport>().GetAllAsync();
-        var dto = exports.Select(e => new ConversionExportDto(e.Id, e.FileName, e.BlobUrl, e.DateFrom, e.DateTo, e.TotalRecords, e.CreatedAt));
+
+        var dto = exports.Select
+        (
+            e => new ConversionExportDto
+            (
+                e.Id,
+                e.FileName,
+                e.BlobUrl,
+                e.DateFrom,
+                e.DateTo,
+                e.TotalRecords,
+                e.CreatedAt
+            )
+        );
 
         return ApiResponse<IEnumerable<ConversionExportDto>>.Ok(dto);
     }

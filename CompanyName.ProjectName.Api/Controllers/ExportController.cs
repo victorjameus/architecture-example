@@ -1,12 +1,7 @@
-﻿using Asp.Versioning;
-using CompanyName.ProjectName.Application.Common.Models;
+﻿using CompanyName.ProjectName.Application.Common.Models;
 using CompanyName.ProjectName.Application.Features.ConversionExport.Commands;
 using CompanyName.ProjectName.Application.Features.ConversionExport.DTOs;
 using CompanyName.ProjectName.Application.Features.ConversionExport.Queries;
-using CompanyName.ProjectName.Domain.Exceptions;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace CompanyName.ProjectName.Api.Controllers;
 

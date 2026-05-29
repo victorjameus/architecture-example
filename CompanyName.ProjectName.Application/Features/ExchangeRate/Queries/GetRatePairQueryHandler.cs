@@ -11,7 +11,13 @@ public sealed class GetRatePairQueryHandler(IExchangeRateService exchangeRateSer
     public async Task<ApiResponse<ExchangeRatePairDto>> Handle(GetRatePairQuery request, CancellationToken ct)
     {
         var rate = await exchangeRateService.GetRateAsync(request.FromCurrency.ToUpper(), request.ToCurrency.ToUpper());
-        var dto = new ExchangeRatePairDto(request.FromCurrency.ToUpper(), request.ToCurrency.ToUpper(), rate);
+
+        var dto = new ExchangeRatePairDto
+        (
+            request.FromCurrency.ToUpper(),
+            request.ToCurrency.ToUpper(),
+            rate
+        );
 
         return ApiResponse<ExchangeRatePairDto>.Ok(dto);
     }

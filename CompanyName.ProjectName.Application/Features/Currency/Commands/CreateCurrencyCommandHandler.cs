@@ -33,7 +33,17 @@ public sealed class CreateCurrencyCommandHandler(IUnitOfWork uow, IInsightServic
         await uow.SaveChangesAsync();
 
         var created = await uow.Repository<Domain.Entities.Currency>().GetByIdAsync(id);
-        var dto = new CurrencyDto(created!.Id, created.Code, created.Name, created.Symbol, created.IsActive, created.CreatedAt, created.UpdatedAt);
+
+        var dto = new CurrencyDto
+        (
+            created!.Id,
+            created.Code,
+            created.Name,
+            created.Symbol,
+            created.IsActive,
+            created.CreatedAt,
+            created.UpdatedAt
+        );
 
         cache.Remove("currencies:all");
 

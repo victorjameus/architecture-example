@@ -6,7 +6,8 @@ namespace CompanyName.ProjectName.Application.Features.ExchangeRate.Queries;
 
 public record GetAllRatesQuery(string BaseCurrency) : IRequest<ApiResponse<ExchangeRateDto>>;
 
-public sealed class GetAllRatesQueryHandler(IExchangeRateService exchangeRateService, ICacheService cache) : IRequestHandler<GetAllRatesQuery, ApiResponse<ExchangeRateDto>>
+public sealed class GetAllRatesQueryHandler(IExchangeRateService exchangeRateService, ICacheService cache)
+    : IRequestHandler<GetAllRatesQuery, ApiResponse<ExchangeRateDto>>
 {
     public async Task<ApiResponse<ExchangeRateDto>> Handle(GetAllRatesQuery request, CancellationToken ct)
     {

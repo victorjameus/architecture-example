@@ -18,7 +18,14 @@ internal sealed class GenericRepository<T>(IDbConnection connection, IDbTransact
 
     public async Task<int> AddAsync(T entity)
     {
-        var excludedProps = new[] { "Id", "CreatedAt", "UpdatedAt", "ConvertedAt" };
+        var excludedProps = new[]
+        {
+            "Id",
+            "CreatedAt",
+            "UpdatedAt",
+            "ConvertedAt"
+        };
+        
         var allowedTypes = new[]
         {
             typeof(string), typeof(bool), typeof(bool?),
@@ -27,17 +34,11 @@ internal sealed class GenericRepository<T>(IDbConnection connection, IDbTransact
             typeof(long), typeof(long?), typeof(DateTime), typeof(DateTime?)
         };
 
-        var properties = typeof(T).GetProperties()
-            .Where(p => !excludedProps.Contains(p.Name) && allowedTypes.Contains(p.PropertyType));
-
+        var properties = typeof(T).GetProperties().Where(p => !excludedProps.Contains(p.Name) && allowedTypes.Contains(p.PropertyType));
         var columns = string.Join(", ", properties.Select(p => p.Name));
         var values = string.Join(", ", properties.Select(p => $"@{p.Name}"));
-        var sql = $"INSERT INTO {_table} ({columns}) OUTPUT INSERTED.Id VALUES ({values})";
 
-        foreach (var p in properties)
-        {
-            Console.WriteLine($"Prop: {p.Name} = {p.GetValue(entity)} (Type: {p.PropertyType})");
-        }
+        var sql = $"INSERT INTO {_table} ({columns}) OUTPUT INSERTED.Id VALUES ({values})";
 
         return await connection.ExecuteScalarAsync<int>(sql, entity, transaction: transaction);
     }
@@ -46,6 +47,7 @@ internal sealed class GenericRepository<T>(IDbConnection connection, IDbTransact
     {
         var properties = typeof(T).GetProperties().Where(p => p.Name != "Id");
         var setClause = string.Join(", ", properties.Select(p => $"{p.Name} = @{p.Name}"));
+
         var sql = $"UPDATE {_table} SET {setClause} WHERE Id = @Id";
         var rows = await connection.ExecuteAsync(sql, entity, transaction: transaction);
 

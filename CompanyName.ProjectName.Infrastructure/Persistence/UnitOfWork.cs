@@ -42,6 +42,7 @@ internal sealed class UnitOfWork(IDbConnection connection) : IUnitOfWork
         catch
         {
             _transaction?.Rollback();
+
             throw;
         }
         finally

@@ -7,8 +7,7 @@ namespace CompanyName.ProjectName.Application.Features.ConversionHistory.Queries
 
 public record GetConversionByIdQuery(int Id) : IRequest<ApiResponse<ConversionHistoryDto>>;
 
-public sealed class GetConversionByIdQueryHandler(IUnitOfWork uow)
-    : IRequestHandler<GetConversionByIdQuery, ApiResponse<ConversionHistoryDto>>
+public sealed class GetConversionByIdQueryHandler(IUnitOfWork uow) : IRequestHandler<GetConversionByIdQuery, ApiResponse<ConversionHistoryDto>>
 {
     public async Task<ApiResponse<ConversionHistoryDto>> Handle(GetConversionByIdQuery request, CancellationToken ct)
     {

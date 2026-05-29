@@ -64,11 +64,11 @@ internal sealed class InsightService(TelemetryClient telemetryClient) : IInsight
 
     private static SeverityLevel MapLevel(InsightLevel level) => level switch
     {
-        InsightLevel.Verbose => SeverityLevel.Verbose,
+        InsightLevel.Verbose     => SeverityLevel.Verbose,
         InsightLevel.Information => SeverityLevel.Information,
-        InsightLevel.Warning => SeverityLevel.Warning,
-        InsightLevel.Error => SeverityLevel.Error,
-        InsightLevel.Critical => SeverityLevel.Critical,
-        _ => SeverityLevel.Information
+        InsightLevel.Warning     => SeverityLevel.Warning,
+        InsightLevel.Error       => SeverityLevel.Error,
+        InsightLevel.Critical    => SeverityLevel.Critical,
+        _                        => SeverityLevel.Information
     };
 }

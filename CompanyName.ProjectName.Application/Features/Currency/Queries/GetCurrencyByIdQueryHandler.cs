@@ -14,7 +14,16 @@ public sealed class GetCurrencyByIdQueryHandler(IUnitOfWork uow) : IRequestHandl
         var currency = await uow.Repository<Domain.Entities.Currency>().GetByIdAsync(request.Id)
             ?? throw new NotFoundException($"Moneda con id {request.Id} no encontrada.");
 
-        var dto = new CurrencyDto(currency.Id, currency.Code, currency.Name, currency.Symbol, currency.IsActive, currency.CreatedAt, currency.UpdatedAt);
+        var dto = new CurrencyDto
+        (
+            currency.Id,
+            currency.Code,
+            currency.Name,
+            currency.Symbol,
+            currency.IsActive,
+            currency.CreatedAt,
+            currency.UpdatedAt
+        );
 
         return ApiResponse<CurrencyDto>.Ok(dto);
     }

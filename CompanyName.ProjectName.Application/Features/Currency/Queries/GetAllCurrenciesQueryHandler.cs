@@ -20,9 +20,19 @@ public sealed class GetAllCurrenciesQueryHandler(IUnitOfWork uow, ICacheService 
         }
 
         var currencies = await uow.Repository<Domain.Entities.Currency>().GetAllAsync();
+
         var dto = currencies.Select
         (
-            c => new CurrencyDto(c.Id, c.Code, c.Name, c.Symbol, c.IsActive, c.CreatedAt, c.UpdatedAt)
+            c => new CurrencyDto
+            (
+                c.Id,
+                c.Code,
+                c.Name,
+                c.Symbol,
+                c.IsActive,
+                c.CreatedAt,
+                c.UpdatedAt
+            )
         );
 
         cache.Set(CacheKey, dto, TimeSpan.FromMinutes(5));

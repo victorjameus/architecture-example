@@ -52,7 +52,16 @@ public sealed class CreateConversionExportCommandHandler(IUnitOfWork uow, IBlobS
         await uow.SaveChangesAsync();
 
         var created = await uow.Repository<Domain.Entities.ConversionExport>().GetByIdAsync(id);
-        var dto = new ConversionExportDto(created!.Id, created.FileName, created.BlobUrl, created.DateFrom, created.DateTo, created.TotalRecords, created.CreatedAt);
+        var dto = new ConversionExportDto
+        (
+            created!.Id,
+            created.FileName,
+            created.BlobUrl,
+            created.DateFrom,
+            created.DateTo,
+            created.TotalRecords,
+            created.CreatedAt
+        );
 
         insightService.TrackEvent("ExportGenerado", new Dictionary<string, string>
         {
@@ -78,16 +87,10 @@ public sealed class CreateConversionExportCommandHandler(IUnitOfWork uow, IBlobS
 
         foreach (var r in records)
         {
-            sb.AppendLine
-            (
-                $"{r.Id}," +
-                $"{currencyMap.GetValueOrDefault(r.FromCurrencyId, string.Empty)}," +
-                $"{currencyMap.GetValueOrDefault(r.ToCurrencyId, string.Empty)}," +
-                $"{r.Amount}," +
-                $"{r.ConvertedAmount}," +
-                $"{r.ExchangeRate}," +
-                $"{r.ConvertedAt:yyyy-MM-ddTHH:mm:ss}"
-            );
+            var from = currencyMap.GetValueOrDefault(r.FromCurrencyId, string.Empty);
+            var to = currencyMap.GetValueOrDefault(r.ToCurrencyId, string.Empty);
+
+            sb.AppendLine($"{r.Id},{from},{to},{r.Amount},{r.ConvertedAmount},{r.ExchangeRate},{r.ConvertedAt:yyyy-MM-ddTHH:mm:ss}");
         }
 
         return sb.ToString();
