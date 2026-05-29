@@ -1,16 +1,8 @@
-using CompanyName.ProjectName.Api.Converters;
 using CompanyName.ProjectName.Api.Middlewares;
 using CompanyName.ProjectName.Application;
 using CompanyName.ProjectName.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
-    });
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
