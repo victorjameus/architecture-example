@@ -34,9 +34,6 @@ internal sealed class GenericRepository<T>(IDbConnection connection, IDbTransact
         var values = string.Join(", ", properties.Select(p => $"@{p.Name}"));
         var sql = $"INSERT INTO {_table} ({columns}) OUTPUT INSERTED.Id VALUES ({values})";
 
-        Console.WriteLine($"SQL: {sql}");
-        Console.WriteLine($"Columns: {columns}");
-        Console.WriteLine($"Values: {values}");
         foreach (var p in properties)
         {
             Console.WriteLine($"Prop: {p.Name} = {p.GetValue(entity)} (Type: {p.PropertyType})");
