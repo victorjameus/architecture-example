@@ -1,0 +1,18 @@
+﻿using CompanyName.ProjectName.Application.Common.Interfaces;
+using CompanyName.ProjectName.Infrastructure.ExternalServices;
+using CompanyName.ProjectName.Infrastructure.Persistence;
+
+namespace CompanyName.ProjectName.Infrastructure;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<IDbConnection>(_ => new SqlConnection(configuration.GetConnectionString("DefaultConnection")));
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IExchangeRateService, ExchangeRateService>();
+        services.AddScoped<IBlobStorageService, BlobStorageService>();
+
+        return services;
+    }
+}
