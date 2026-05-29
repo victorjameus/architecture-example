@@ -1,0 +1,397 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CompanyName.ProjectName.Api</name>
+    </assembly>
+    <members>
+        <member name="T:CompanyName.ProjectName.Api.Controllers.ConversionController">
+            <summary>
+            Historial de conversiones de moneda
+            </summary>
+            <remarks>
+            Proporciona operaciones sobre el historial de conversiones de moneda.
+            Las conversiones se realizan en tiempo real consultando ExchangeRate-API
+            y la tasa utilizada queda registrada para fines de auditoría.
+            </remarks>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.ConversionController.#ctor(MediatR.IMediator)">
+            <summary>
+            Historial de conversiones de moneda
+            </summary>
+            <remarks>
+            Proporciona operaciones sobre el historial de conversiones de moneda.
+            Las conversiones se realizan en tiempo real consultando ExchangeRate-API
+            y la tasa utilizada queda registrada para fines de auditoría.
+            </remarks>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.ConversionController.GetAll(System.Int32,System.Int32)">
+             <summary>
+             GET /api/conversion
+             </summary>
+             <remarks>
+             Obtiene el historial de conversiones.
+            
+             **Consideraciones:**
+             - Los resultados se retornan de forma paginada. Utilice los parámetros `page` y `pageSize`
+               para controlar la navegación entre páginas.
+            
+             **Excepciones:**
+             - **400 Bad Request** — Los parámetros `page` o `pageSize` no cumplen las reglas de validación.
+             </remarks>
+             <param name="page">Número de página a recuperar. Debe ser mayor a 0. Valor por defecto: 1.</param>
+             <param name="pageSize">Cantidad de registros por página. Debe ser mayor a 0 y no superar 100. Valor por defecto: 10.</param>
+             <returns>
+             Un <see cref="T:CompanyName.ProjectName.Application.Common.Models.PagedResponse`1"/> de <see cref="T:CompanyName.ProjectName.Application.Features.ConversionHistory.DTOs.ConversionHistoryDto"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
+             incluyendo metadatos de paginación como total de registros, páginas y navegación.
+             </returns>
+             <response code="200">Retorna el historial paginado de conversiones.</response>
+             <response code="400">Los parámetros de paginación no cumplen las reglas de validación.</response>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.ConversionController.GetById(System.Int32)">
+             <summary>
+             GET /api/conversion/{id}
+             </summary>
+             <remarks>
+             Obtiene una conversión específica por su identificador único.
+            
+             **Excepciones:**
+             - **404 Not Found** — No existe una conversión con el `id` especificado.
+             </remarks>
+             <param name="id">Identificador único de la conversión.</param>
+             <returns>
+             Un <see cref="T:CompanyName.ProjectName.Application.Features.ConversionHistory.DTOs.ConversionHistoryDto"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/> si existe.
+             </returns>
+             <response code="200">Retorna la conversión solicitada.</response>
+             <response code="404">No se encontró una conversión con el id especificado.</response>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.ConversionController.Create(CompanyName.ProjectName.Application.Features.ConversionHistory.Commands.CreateConversionCommand)">
+             <summary>
+             POST /api/conversion
+             </summary>
+             <remarks>
+             Realiza una conversión de moneda en tiempo real.
+            
+             **Instrucciones de uso:**
+             - El campo `FromCurrencyId` debe corresponder a una moneda activa en el catálogo.
+             - El campo `ToCurrencyId` debe corresponder a una moneda activa en el catálogo.
+             - Los campos `FromCurrencyId` y `ToCurrencyId` no pueden ser iguales.
+             - El campo `Amount` debe ser mayor a 0.
+            
+             **Consideraciones:**
+             - La tasa de cambio se obtiene en tiempo real desde ExchangeRate-API.
+             - Incluye reintentos automáticos con backoff exponencial y circuit breaker.
+             - La tasa utilizada queda registrada para auditoría independientemente de variaciones futuras.
+            
+             **Excepciones:**
+             - **400 Bad Request** — Algún campo no cumple las reglas de validación.
+             - **404 Not Found** — La moneda origen o destino no existe en el catálogo.
+             - **502 Bad Gateway** — ExchangeRate-API no está disponible tras agotar los reintentos.
+             </remarks>
+             <param name="command">Comando con los identificadores de moneda origen, destino y el monto a convertir.</param>
+             <returns>
+             El <see cref="T:CompanyName.ProjectName.Application.Features.ConversionHistory.DTOs.ConversionHistoryDto"/> recién creado envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
+             incluyendo el monto convertido, la tasa de cambio utilizada y la fecha de conversión.
+             </returns>
+             <response code="201">Conversión realizada y registrada exitosamente.</response>
+             <response code="400">Error de validación en el cuerpo de la solicitud.</response>
+             <response code="404">La moneda origen o destino no existe en el catálogo.</response>
+             <response code="502">ExchangeRate-API no está disponible.</response>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.ConversionController.Delete(System.Int32)">
+             <summary>
+             DELETE /api/conversion/{id}
+             </summary>
+             <remarks>
+             Elimina un registro del historial de conversiones.
+            
+             **Consideraciones:**
+             - Esta operación realiza un borrado físico del registro.
+             - Una vez eliminado, no es posible recuperar la información de la conversión.
+            
+             **Excepciones:**
+             - **404 Not Found** — No existe una conversión con el `id` especificado.
+             </remarks>
+             <param name="id">Identificador único de la conversión a eliminar.</param>
+             <returns>
+             Un <see cref="T:System.Boolean"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/> indicando el resultado de la operación.
+             </returns>
+             <response code="200">Conversión eliminada exitosamente.</response>
+             <response code="404">No se encontró una conversión con el id especificado.</response>
+        </member>
+        <member name="T:CompanyName.ProjectName.Api.Controllers.CurrencyController">
+            <summary>
+            Gestión del catálogo de monedas
+            </summary>
+            <remarks>
+            Proporciona operaciones CRUD sobre el catálogo de monedas.
+            Las eliminaciones son lógicas para preservar la integridad referencial con el historial de conversiones.
+            </remarks>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrencyController.#ctor(MediatR.IMediator)">
+            <summary>
+            Gestión del catálogo de monedas
+            </summary>
+            <remarks>
+            Proporciona operaciones CRUD sobre el catálogo de monedas.
+            Las eliminaciones son lógicas para preservar la integridad referencial con el historial de conversiones.
+            </remarks>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrencyController.GetAll">
+             <summary>
+             GET /api/currency
+             </summary>
+             <remarks>
+             Obtiene todas las monedas activas del catálogo.
+            
+             **Consideraciones:**
+             - El resultado se almacena en caché durante **5 minutos**.
+             - El caché se invalida automáticamente al crear, actualizar o desactivar una moneda.
+             </remarks>
+             <returns>
+             Lista de <see cref="T:CompanyName.ProjectName.Application.Features.Currency.DTOs.CurrencyDto"/> envuelta en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>.
+             Retorna una lista vacía si no existen monedas activas.
+             </returns>
+             <response code="200">Retorna la lista de monedas activas.</response>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrencyController.GetById(System.Int32)">
+             <summary>
+             GET /api/currency/{id}
+             </summary>
+             <remarks>
+             Obtiene una moneda específica por su identificador único.
+            
+             **Excepciones:**
+             - **404 Not Found** — No existe una moneda con el `id` especificado.
+             </remarks>
+             <param name="id">Identificador único de la moneda.</param>
+             <returns>
+             Un <see cref="T:CompanyName.ProjectName.Application.Features.Currency.DTOs.CurrencyDto"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/> si existe.
+             </returns>
+             <response code="200">Retorna la moneda solicitada.</response>
+             <response code="404">No se encontró una moneda con el id especificado.</response>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrencyController.Create(CompanyName.ProjectName.Application.Features.Currency.Commands.CreateCurrencyCommand)">
+             <summary>
+             POST /api/currency
+             </summary>
+             <remarks>
+             Crea una nueva moneda en el catálogo.
+            
+             **Instrucciones de uso:**
+             - El campo `Code` debe ser un código ISO 4217 de exactamente **3 caracteres** (ej: USD, EUR, CLP).
+             - El campo `Code` se convierte automáticamente a mayúsculas.
+             - El campo `Name` no debe superar los 100 caracteres.
+             - El campo `Symbol` no debe superar los 10 caracteres.
+            
+             **Consideraciones:**
+             - La creación invalida el caché del listado de monedas.
+            
+             **Excepciones:**
+             - **400 Bad Request** — Algún campo no cumple las reglas de validación.
+             - **409 Conflict** — Ya existe una moneda con el mismo `Code`.
+             </remarks>
+             <param name="command">Comando con los datos de la moneda a crear.</param>
+             <returns>
+             El <see cref="T:CompanyName.ProjectName.Application.Features.Currency.DTOs.CurrencyDto"/> recién creado envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
+             incluyendo el identificador generado y la fecha de creación.
+             </returns>
+             <response code="201">Moneda creada exitosamente.</response>
+             <response code="400">Error de validación en el cuerpo de la solicitud.</response>
+             <response code="409">Ya existe una moneda con el mismo código.</response>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrencyController.Update(System.Int32,CompanyName.ProjectName.Application.Features.Currency.Commands.UpdateCurrencyCommand)">
+             <summary>
+             PUT /api/currency/{id}
+             </summary>
+             <remarks>
+             Actualiza los datos de una moneda existente en el catálogo.
+            
+             **Instrucciones de uso:**
+             - El campo `Code` debe ser un código ISO 4217 de exactamente **3 caracteres**.
+             - El campo `Code` se convierte automáticamente a mayúsculas.
+             - El campo `Name` no debe superar los 100 caracteres.
+             - El campo `Symbol` no debe superar los 10 caracteres.
+            
+             **Consideraciones:**
+             - La actualización invalida el caché del listado de monedas.
+            
+             **Excepciones:**
+             - **400 Bad Request** — Algún campo no cumple las reglas de validación.
+             - **404 Not Found** — No existe una moneda con el `id` especificado.
+             - **409 Conflict** — Otra moneda ya tiene el mismo `Code`.
+             </remarks>
+             <param name="id">Identificador único de la moneda a actualizar.</param>
+             <param name="command">Comando con los datos actualizados de la moneda.</param>
+             <returns>
+             El <see cref="T:CompanyName.ProjectName.Application.Features.Currency.DTOs.CurrencyDto"/> actualizado envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>.
+             </returns>
+             <response code="200">Moneda actualizada exitosamente.</response>
+             <response code="400">Error de validación en el cuerpo de la solicitud.</response>
+             <response code="404">No se encontró una moneda con el id especificado.</response>
+             <response code="409">Otra moneda ya tiene el mismo código.</response>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.CurrencyController.Delete(System.Int32)">
+             <summary>
+             DELETE /api/currency/{id}
+             </summary>
+             <remarks>
+             Desactiva una moneda del catálogo mediante borrado lógico.
+            
+             **Consideraciones:**
+             - Esta operación establece `IsActive` en false. El registro no se elimina físicamente
+               para preservar la integridad referencial con los registros de `ConversionHistory`.
+             - La desactivación invalida el caché del listado de monedas.
+            
+             **Excepciones:**
+             - **404 Not Found** — No existe una moneda con el `id` especificado.
+             </remarks>
+             <param name="id">Identificador único de la moneda a desactivar.</param>
+             <returns>
+             Un <see cref="T:System.Boolean"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/> indicando el resultado de la operación.
+             </returns>
+             <response code="200">Moneda desactivada exitosamente.</response>
+             <response code="404">No se encontró una moneda con el id especificado.</response>
+        </member>
+        <member name="T:CompanyName.ProjectName.Api.Controllers.ExportController">
+            <summary>
+            Exportación del historial de conversiones a Azure Blob Storage
+            </summary>
+            <remarks>
+            Proporciona endpoints para la generación y consulta de exportaciones del historial de conversiones.
+            Los archivos se generan en formato CSV y se almacenan en Azure Blob Storage con acceso público.
+            Cada exportación queda registrada en la base de datos con su URL de descarga y metadatos asociados.
+            </remarks>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.ExportController.#ctor(MediatR.IMediator)">
+            <summary>
+            Exportación del historial de conversiones a Azure Blob Storage
+            </summary>
+            <remarks>
+            Proporciona endpoints para la generación y consulta de exportaciones del historial de conversiones.
+            Los archivos se generan en formato CSV y se almacenan en Azure Blob Storage con acceso público.
+            Cada exportación queda registrada en la base de datos con su URL de descarga y metadatos asociados.
+            </remarks>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.ExportController.GetAll">
+             <summary>
+             GET /api/conversions/exports
+             </summary>
+             <remarks>
+             Obtiene el listado de exportaciones generadas anteriormente.
+            
+             **Consideraciones:**
+             - Retorna una lista vacía si no se han generado exportaciones.
+             </remarks>
+             <returns>
+             Lista de <see cref="T:CompanyName.ProjectName.Application.Features.ConversionExport.DTOs.ConversionExportDto"/> envuelta en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
+             conteniendo la URL de descarga, fechas de filtro aplicadas y cantidad de registros de cada exportación.
+             </returns>
+             <response code="200">Retorna el listado de exportaciones generadas.</response>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.ExportController.Create(CompanyName.ProjectName.Application.Features.ConversionExport.Commands.CreateConversionExportCommand)">
+             <summary>
+             POST /api/conversions/export
+             </summary>
+             <remarks>
+             Genera un archivo CSV con el historial de conversiones y lo sube a Azure Blob Storage.
+            
+             **Información de columnas dentro del archivo:**
+             | Columna         | Tipo        | Descripción                                          |
+             |-----------------|-------------|------------------------------------------------------|
+             | Id              | **int**     | Identificador único de la conversión.                |
+             | FromCurrencyId  | **int**     | Identificador de la moneda origen.                   |
+             | ToCurrencyId    | **int**     | Identificador de la moneda destino.                  |
+             | Amount          | **decimal** | Monto original ingresado.                            |
+             | ConvertedAmount | **decimal** | Monto resultante de la conversión.                   |
+             | ExchangeRate    | **decimal** | Tasa de cambio utilizada al momento de la conversión.|
+             | ConvertedAt     | **datetime**| Fecha y hora de la conversión en formato UTC.        |
+            
+             **Consideraciones:**
+             - Si no se especifican fechas, se exportan **todos** los registros disponibles.
+             - Si el rango no contiene registros, se genera un CSV vacío y se registra **Warning** en Application Insights.
+             - El archivo generado es accesible públicamente mediante la URL retornada.
+             - Incluye reintentos automáticos con backoff exponencial y circuit breaker ante fallos de Blob Storage.
+            
+             **Excepciones:**
+             - **400 Bad Request** — El campo `DateFrom` es mayor que `DateTo`.
+             - **502 Bad Gateway** — Azure Blob Storage no está disponible tras agotar los reintentos.
+             </remarks>
+             <param name="command">Comando con los filtros opcionales `DateFrom` y `DateTo` para el rango de exportación.</param>
+             <returns>
+             El <see cref="T:CompanyName.ProjectName.Application.Features.ConversionExport.DTOs.ConversionExportDto"/> recién creado envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
+             conteniendo el nombre del archivo, la URL pública de descarga y la cantidad de registros exportados.
+             </returns>
+             <response code="201">Exportación generada y subida a Blob Storage exitosamente.</response>
+             <response code="400">Error de validación en el cuerpo de la solicitud.</response>
+             <response code="502">Azure Blob Storage no está disponible.</response>
+        </member>
+        <member name="T:CompanyName.ProjectName.Api.Controllers.RateController">
+            <summary>
+            Consulta de tasas de cambio en tiempo real
+            </summary>
+            <remarks>
+            Proporciona endpoints para la consulta de tasas de cambio obtenidas en tiempo real desde ExchangeRate-API.
+            Incluye reintentos automáticos con backoff exponencial y circuit breaker ante fallos del servicio externo.
+            </remarks>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.RateController.#ctor(MediatR.IMediator)">
+            <summary>
+            Consulta de tasas de cambio en tiempo real
+            </summary>
+            <remarks>
+            Proporciona endpoints para la consulta de tasas de cambio obtenidas en tiempo real desde ExchangeRate-API.
+            Incluye reintentos automáticos con backoff exponencial y circuit breaker ante fallos del servicio externo.
+            </remarks>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.RateController.GetAllRates(System.String)">
+             <summary>
+             GET /api/rate/{baseCurrency}
+             </summary>
+             <remarks>
+             Obtiene todas las tasas de cambio disponibles para una moneda base.
+            
+             **Consideraciones:**
+             - El resultado se almacena en caché durante **1 hora** por moneda base.
+             - El parámetro `baseCurrency` se convierte automáticamente a mayúsculas.
+            
+             **Excepciones:**
+             - **400 Bad Request** — El parámetro `baseCurrency` no cumple las reglas de validación.
+             - **502 Bad Gateway** — ExchangeRate-API no está disponible tras agotar los reintentos.
+             </remarks>
+             <param name="baseCurrency">Código ISO 4217 de la moneda base (ej: USD, EUR, CLP). Exactamente 3 caracteres.</param>
+             <returns>
+             Un <see cref="T:CompanyName.ProjectName.Application.Features.ExchangeRate.DTOs.ExchangeRateDto"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
+             conteniendo la moneda base y un diccionario con todas las tasas de cambio disponibles.
+             </returns>
+             <response code="200">Retorna todas las tasas de cambio para la moneda base.</response>
+             <response code="400">El código de moneda no cumple las reglas de validación.</response>
+             <response code="502">ExchangeRate-API no está disponible.</response>
+        </member>
+        <member name="M:CompanyName.ProjectName.Api.Controllers.RateController.GetRatePair(System.String,System.String)">
+             <summary>
+             GET /api/rate/{fromCurrency}/{toCurrency}
+             </summary>
+             <remarks>
+             Obtiene la tasa de cambio entre un par de monedas específico.
+            
+             **Consideraciones:**
+             - Los parámetros `fromCurrency` y `toCurrency` se convierten automáticamente a mayúsculas.
+             - Este endpoint no utiliza caché, garantizando el valor más actualizado disponible.
+            
+             **Excepciones:**
+             - **400 Bad Request** — Alguno de los parámetros no cumple las reglas de validación,
+               o `fromCurrency` y `toCurrency` son iguales.
+             - **502 Bad Gateway** — ExchangeRate-API no está disponible tras agotar los reintentos.
+             </remarks>
+             <param name="fromCurrency">Código ISO 4217 de la moneda origen (ej: USD). Exactamente 3 caracteres.</param>
+             <param name="toCurrency">Código ISO 4217 de la moneda destino (ej: CLP). Exactamente 3 caracteres.</param>
+             <returns>
+             Un <see cref="T:CompanyName.ProjectName.Application.Features.ExchangeRate.DTOs.ExchangeRatePairDto"/> envuelto en <see cref="T:CompanyName.ProjectName.Application.Common.Models.ApiResponse`1"/>,
+             conteniendo la moneda origen, destino y la tasa de cambio vigente.
+             </returns>
+             <response code="200">Retorna la tasa de cambio del par solicitado.</response>
+             <response code="400">Los códigos de moneda no cumplen las reglas de validación.</response>
+             <response code="502">ExchangeRate-API no está disponible.</response>
+        </member>
+    </members>
+</doc>

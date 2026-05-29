@@ -1,16 +1,16 @@
+using CompanyName.ProjectName.Api.Extensions.Swagger;
 using CompanyName.ProjectName.Api.Middlewares;
 using CompanyName.ProjectName.Application;
 using CompanyName.ProjectName.Infrastructure;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
-builder.Services.AddSwaggerGen();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddSwaggerExtension(builder.Configuration);
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -26,8 +26,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerExtension();
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
