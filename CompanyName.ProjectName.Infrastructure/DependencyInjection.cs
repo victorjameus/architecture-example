@@ -1,5 +1,6 @@
 ﻿using CompanyName.ProjectName.Application.Common.Interfaces;
 using CompanyName.ProjectName.Infrastructure.ExternalServices;
+using CompanyName.ProjectName.Infrastructure.HealthChecks;
 using CompanyName.ProjectName.Infrastructure.Persistence;
 using CompanyName.ProjectName.Infrastructure.Telemetry;
 
@@ -14,6 +15,11 @@ public static class DependencyInjection
         services.AddScoped<IExchangeRateService, ExchangeRateService>();
         services.AddScoped<IBlobStorageService, BlobStorageService>();
         services.AddSingleton<IInsightService, InsightService>();
+
+        services.AddHealthChecks()
+            .AddCheck<SqlServerHealthCheck>("sql-server")
+            .AddCheck<ExchangeRateHealthCheck>("exchange-rate-api")
+            .AddCheck<BlobStorageHealthCheck>("blob-storage");
 
         return services;
     }

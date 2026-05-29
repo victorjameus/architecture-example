@@ -7,5 +7,6 @@ global using Microsoft.ApplicationInsights.DataContracts;
 global using Microsoft.Data.SqlClient;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Diagnostics.HealthChecks;
 global using System.Data;
 global using System.Text.Json.Serialization;
