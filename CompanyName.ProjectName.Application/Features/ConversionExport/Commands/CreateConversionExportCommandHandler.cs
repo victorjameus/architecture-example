@@ -1,12 +1,13 @@
 ﻿using CompanyName.ProjectName.Application.Common.Interfaces;
 using CompanyName.ProjectName.Application.Common.Models;
 using CompanyName.ProjectName.Application.Features.ConversionExport.DTOs;
+using CompanyName.ProjectName.Domain.Enums;
 
 namespace CompanyName.ProjectName.Application.Features.ConversionExport.Commands;
 
 public record CreateConversionExportCommand(DateTime? DateFrom, DateTime? DateTo) : IRequest<ApiResponse<ConversionExportDto>>;
 
-public sealed class CreateConversionExportCommandHandler(IUnitOfWork uow, IBlobStorageService blobStorageService) : IRequestHandler<CreateConversionExportCommand, ApiResponse<ConversionExportDto>>
+public sealed class CreateConversionExportCommandHandler(IUnitOfWork uow, IBlobStorageService blobStorageService, IInsightService insightService) : IRequestHandler<CreateConversionExportCommand, ApiResponse<ConversionExportDto>>
 {
     public async Task<ApiResponse<ConversionExportDto>> Handle(CreateConversionExportCommand request, CancellationToken ct)
     {
@@ -23,8 +24,14 @@ public sealed class CreateConversionExportCommandHandler(IUnitOfWork uow, IBlobS
         }
 
         var records = conversions.ToList();
+
+        if (records.Count == 0)
+        {
+            insightService.TrackTrace("Export solicitado sin registros para el rango de fechas indicado.", InsightLevel.Warning);
+        }
+
         var csv = GenerateCsv(records);
-        var fileName = $"export_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+        var fileName = $"export_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
 
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csv));
         var blobUrl = await blobStorageService.UploadAsync(stream, fileName, "text/csv");
@@ -41,8 +48,18 @@ public sealed class CreateConversionExportCommandHandler(IUnitOfWork uow, IBlobS
         var id = await uow.Repository<Domain.Entities.ConversionExport>().AddAsync(entity);
         await uow.SaveChangesAsync();
 
-        entity.Id = id;
-        var dto = new ConversionExportDto(entity.Id, entity.FileName, entity.BlobUrl, entity.DateFrom, entity.DateTo, entity.TotalRecords, entity.CreatedAt);
+        var created = await uow.Repository<Domain.Entities.ConversionExport>().GetByIdAsync(id);
+        var dto = new ConversionExportDto(created!.Id, created.FileName, created.BlobUrl, created.DateFrom, created.DateTo, created.TotalRecords, created.CreatedAt);
+
+        insightService.TrackEvent("ExportGenerado", new Dictionary<string, string>
+        {
+            { "FileName", fileName },
+            { "TotalRecords", records.Count.ToString() },
+            { "DateFrom", request.DateFrom?.ToString() ?? "null" },
+            { "DateTo", request.DateTo?.ToString() ?? "null" }
+        });
+
+        insightService.TrackTrace($"Export generado: {fileName} con {records.Count} registros.", InsightLevel.Information);
 
         return ApiResponse<ConversionExportDto>.Ok(dto, "Exportación generada exitosamente.");
     }
@@ -54,7 +71,7 @@ public sealed class CreateConversionExportCommandHandler(IUnitOfWork uow, IBlobS
 
         foreach (var r in records)
         {
-            sb.AppendLine($"{r.Id},{r.FromCurrencyId},{r.ToCurrencyId},{r.Amount},{r.ConvertedAmount},{r.ExchangeRate},{r.ConvertedAt:yyyy-MM-dd HH:mm:ss}");
+            sb.AppendLine($"{r.Id},{r.FromCurrencyId},{r.ToCurrencyId},{r.Amount},{r.ConvertedAmount},{r.ExchangeRate},{r.ConvertedAt:yyyy-MM-ddTHH:mm:ss}");
         }
 
         return sb.ToString();

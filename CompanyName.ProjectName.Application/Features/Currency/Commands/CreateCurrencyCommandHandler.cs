@@ -1,13 +1,14 @@
 ﻿using CompanyName.ProjectName.Application.Common.Interfaces;
 using CompanyName.ProjectName.Application.Common.Models;
 using CompanyName.ProjectName.Application.Features.Currency.DTOs;
+using CompanyName.ProjectName.Domain.Enums;
 using CompanyName.ProjectName.Domain.Exceptions;
 
 namespace CompanyName.ProjectName.Application.Features.Currency.Commands;
 
 public record CreateCurrencyCommand(string Code, string Name, string Symbol) : IRequest<ApiResponse<CurrencyDto>>;
 
-public sealed class CreateCurrencyCommandHandler(IUnitOfWork uow) : IRequestHandler<CreateCurrencyCommand, ApiResponse<CurrencyDto>>
+public sealed class CreateCurrencyCommandHandler(IUnitOfWork uow, IInsightService insightService) : IRequestHandler<CreateCurrencyCommand, ApiResponse<CurrencyDto>>
 {
     public async Task<ApiResponse<CurrencyDto>> Handle(CreateCurrencyCommand request, CancellationToken ct)
     {
@@ -32,6 +33,14 @@ public sealed class CreateCurrencyCommandHandler(IUnitOfWork uow) : IRequestHand
 
         var created = await uow.Repository<Domain.Entities.Currency>().GetByIdAsync(id);
         var dto = new CurrencyDto(created!.Id, created.Code, created.Name, created.Symbol, created.IsActive, created.CreatedAt, created.UpdatedAt);
+
+        insightService.TrackEvent("MonedaCreada", new Dictionary<string, string>
+        {
+            { "Code", created.Code },
+            { "Name", created.Name }
+        });
+
+        insightService.TrackTrace($"Moneda {created.Code} creada con id {created.Id}.", InsightLevel.Information);
 
         return ApiResponse<CurrencyDto>.Ok(dto, "Moneda creada exitosamente.");
     }

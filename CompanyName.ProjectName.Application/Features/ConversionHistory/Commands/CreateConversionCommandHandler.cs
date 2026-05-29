@@ -1,13 +1,14 @@
 ﻿using CompanyName.ProjectName.Application.Common.Interfaces;
 using CompanyName.ProjectName.Application.Common.Models;
 using CompanyName.ProjectName.Application.Features.ConversionHistory.DTOs;
+using CompanyName.ProjectName.Domain.Enums;
 using CompanyName.ProjectName.Domain.Exceptions;
 
 namespace CompanyName.ProjectName.Application.Features.ConversionHistory.Commands;
 
 public record CreateConversionCommand(int FromCurrencyId, int ToCurrencyId, decimal Amount) : IRequest<ApiResponse<ConversionHistoryDto>>;
 
-public sealed class CreateConversionCommandHandler(IUnitOfWork uow, IExchangeRateService exchangeRateService) : IRequestHandler<CreateConversionCommand, ApiResponse<ConversionHistoryDto>>
+public sealed class CreateConversionCommandHandler(IUnitOfWork uow, IExchangeRateService exchangeRateService, IInsightService insightService) : IRequestHandler<CreateConversionCommand, ApiResponse<ConversionHistoryDto>>
 {
     public async Task<ApiResponse<ConversionHistoryDto>> Handle(CreateConversionCommand request, CancellationToken ct)
     {
@@ -42,6 +43,17 @@ public sealed class CreateConversionCommandHandler(IUnitOfWork uow, IExchangeRat
             created.ExchangeRate,
             created.ConvertedAt
         );
+
+        insightService.TrackEvent("ConversionRealizada", new Dictionary<string, string>
+        {
+            { "FromCurrency", fromCurrency.Code },
+            { "ToCurrency", toCurrency.Code },
+            { "Amount", request.Amount.ToString() },
+            { "ExchangeRate", rate.ToString() },
+            { "ConvertedAmount", convertedAmount.ToString() }
+        });
+
+        insightService.TrackTrace($"Conversión realizada: {request.Amount} {fromCurrency.Code} = {convertedAmount} {toCurrency.Code}.", InsightLevel.Information);
 
         return ApiResponse<ConversionHistoryDto>.Ok(dto, "Conversión realizada exitosamente.");
     }

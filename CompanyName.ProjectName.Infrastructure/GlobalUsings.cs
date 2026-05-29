@@ -2,6 +2,8 @@
 global using Azure.Storage.Blobs.Models;
 global using Dapper;
 global using Flurl.Http;
+global using Microsoft.ApplicationInsights;
+global using Microsoft.ApplicationInsights.DataContracts;
 global using Microsoft.Data.SqlClient;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;

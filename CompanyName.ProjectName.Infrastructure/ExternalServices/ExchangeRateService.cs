@@ -1,9 +1,13 @@
 ﻿using CompanyName.ProjectName.Application.Common.Interfaces;
+using CompanyName.ProjectName.Domain.Enums;
 using CompanyName.ProjectName.Domain.Exceptions;
+using Flurl.Http;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json.Serialization;
 
 namespace CompanyName.ProjectName.Infrastructure.ExternalServices;
 
-internal sealed class ExchangeRateService(IConfiguration configuration) : IExchangeRateService
+internal sealed class ExchangeRateService(IConfiguration configuration, IInsightService insightService) : IExchangeRateService
 {
     private readonly string _baseUrl = configuration["ExchangeRateApi:BaseUrl"]!;
     private readonly string _apiKey = configuration["ExchangeRateApi:ApiKey"]!;
@@ -15,11 +19,14 @@ internal sealed class ExchangeRateService(IConfiguration configuration) : IExcha
             var response = await $"{_baseUrl}/{_apiKey}/pair/{fromCurrency}/{toCurrency}"
                 .GetJsonAsync<ExchangeRatePairResponse>();
 
+            insightService.TrackTrace($"Tasa obtenida {fromCurrency}→{toCurrency}: {response.ConversionRate}", InsightLevel.Information);
+
             return response.ConversionRate;
         }
         catch (FlurlHttpException ex)
         {
-            throw new ExternalServiceException($"Error al obtener la tasa de cambio {fromCurrency} → {toCurrency}: {ex.Message}");
+            insightService.TrackTrace($"Error al obtener tasa {fromCurrency}→{toCurrency}: {ex.Message}", InsightLevel.Error);
+            throw new ExternalServiceException($"Error al obtener la tasa de cambio {fromCurrency}→{toCurrency}: {ex.Message}");
         }
     }
 
@@ -30,10 +37,13 @@ internal sealed class ExchangeRateService(IConfiguration configuration) : IExcha
             var response = await $"{_baseUrl}/{_apiKey}/latest/{baseCurrency}"
                 .GetJsonAsync<ExchangeRateLatestResponse>();
 
+            insightService.TrackTrace($"Tasas obtenidas para base {baseCurrency}: {response.ConversionRates.Count} monedas", InsightLevel.Information);
+
             return response.ConversionRates;
         }
         catch (FlurlHttpException ex)
         {
+            insightService.TrackTrace($"Error al obtener tasas para {baseCurrency}: {ex.Message}", InsightLevel.Error);
             throw new ExternalServiceException($"Error al obtener las tasas de cambio para {baseCurrency}: {ex.Message}");
         }
     }

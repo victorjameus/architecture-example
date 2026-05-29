@@ -7,7 +7,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
     {
         if (!validators.Any())
         {
-            return await next(ct);
+            return await next();
         }
 
         var context = new ValidationContext<TRequest>(request);
@@ -23,6 +23,6 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
             throw new ValidationException(string.Join(", ", errors));
         }
 
-        return await next(ct);
+        return await next();
     }
 }
