@@ -5,6 +5,7 @@ global using Flurl.Http;
 global using Microsoft.ApplicationInsights;
 global using Microsoft.ApplicationInsights.DataContracts;
 global using Microsoft.Data.SqlClient;
+global using Microsoft.Extensions.Caching.Memory;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Diagnostics.HealthChecks;

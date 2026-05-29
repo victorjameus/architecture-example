@@ -6,7 +6,8 @@ namespace CompanyName.ProjectName.Application.Features.Currency.Commands;
 
 public record DeleteCurrencyCommand(int Id) : IRequest<ApiResponse<bool>>;
 
-public sealed class DeleteCurrencyCommandHandler(IUnitOfWork uow) : IRequestHandler<DeleteCurrencyCommand, ApiResponse<bool>>
+public sealed class DeleteCurrencyCommandHandler(IUnitOfWork uow, ICacheService cache)
+    : IRequestHandler<DeleteCurrencyCommand, ApiResponse<bool>>
 {
     public async Task<ApiResponse<bool>> Handle(DeleteCurrencyCommand request, CancellationToken ct)
     {
@@ -16,6 +17,8 @@ public sealed class DeleteCurrencyCommandHandler(IUnitOfWork uow) : IRequestHand
         currency.IsActive = false;
         await uow.Repository<Domain.Entities.Currency>().UpdateAsync(currency);
         await uow.SaveChangesAsync();
+
+        cache.Remove("currencies:all");
 
         return ApiResponse<bool>.Ok(true, "Moneda desactivada exitosamente.");
     }

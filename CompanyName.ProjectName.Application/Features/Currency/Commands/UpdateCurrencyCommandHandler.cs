@@ -7,7 +7,8 @@ namespace CompanyName.ProjectName.Application.Features.Currency.Commands;
 
 public record UpdateCurrencyCommand(int Id, string Code, string Name, string Symbol) : IRequest<ApiResponse<CurrencyDto>>;
 
-public sealed class UpdateCurrencyCommandHandler(IUnitOfWork uow) : IRequestHandler<UpdateCurrencyCommand, ApiResponse<CurrencyDto>>
+public sealed class UpdateCurrencyCommandHandler(IUnitOfWork uow, ICacheService cache)
+    : IRequestHandler<UpdateCurrencyCommand, ApiResponse<CurrencyDto>>
 {
     public async Task<ApiResponse<CurrencyDto>> Handle(UpdateCurrencyCommand request, CancellationToken ct)
     {
@@ -31,6 +32,8 @@ public sealed class UpdateCurrencyCommandHandler(IUnitOfWork uow) : IRequestHand
 
         var updated = await uow.Repository<Domain.Entities.Currency>().GetByIdAsync(request.Id);
         var dto = new CurrencyDto(updated!.Id, updated.Code, updated.Name, updated.Symbol, updated.IsActive, updated.CreatedAt, updated.UpdatedAt);
+
+        cache.Remove("currencies:all");
 
         return ApiResponse<CurrencyDto>.Ok(dto, "Moneda actualizada exitosamente.");
     }
